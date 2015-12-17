@@ -46,8 +46,12 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         while self.iterations > 0:
             for st in self.mdp.getStates():
-                self.values[st] = self.getQValue(st, self.getAction(st))
+                v = self.values[st]
+                act = self.getAction(st)
+                if not act == None:
+                    self.values[st] = self.getQValue(st, act)
             self.iterations -= 1
+        
         "*** YOUR CODE HERE ***"
 
 
