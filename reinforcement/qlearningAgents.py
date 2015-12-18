@@ -78,7 +78,7 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        """return key (actie) met de hoogste value"""
+        """return key (actie) met de hoogste Q-value"""
         if self.getLegalActions(state):
           actFromVal = util.Counter()
           for act in self.getLegalActions(state):
@@ -103,12 +103,12 @@ class QLearningAgent(ReinforcementAgent):
         action = None
         "*** YOUR CODE HERE ***"
         if legalActions:
+          """gebruik util.flipCoin en random.choice om soms een random actie nemen"""
           if util.flipCoin(self.epsilon):
             action = random.choice(legalActions)
           else:
+            """"en anders neem je de beste policy actie"""
             action = self.getPolicy(state)
-        else:
-          action = None
         return action
 
     def update(self, state, action, nextState, reward):
@@ -121,10 +121,14 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
+        """update de reward als er een legale actie is"""
         if self.getLegalActions(nextState):
-          reward += self.discount * self.getValue(nextState)
+          nextReward = self.discount * self.getValue(nextState)
+          reward += nextReward
         """gebruik formule in de slides bij temporal difference learning"""
-        self.Qval[(state, action)] = (1 - self.alpha)  * self.getQValue(state, action) + self.alpha * reward
+        Qval = (1 - self.alpha) * self.getQValue(state, action)
+        actualReward = self.alpha * reward
+        self.Qval[(state, action)] = Qval + actualReward
 
 
 

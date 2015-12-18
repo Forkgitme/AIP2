@@ -48,7 +48,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         """reken voor elke iteratie voor elke state de values uit"""
         while self.iterations > 0:
-          """use util.Counter for easyness, om keys met values bij te houden (soort dictionary) zie util"""
+          """use util.Counter voor makkelijkheid, om keys met values bij te houden (soort dictionary) zie util"""
           v = util.Counter()
           """als er geen legal actions zijn (terminal state) continue"""
           for st in mdp.getStates():
@@ -77,11 +77,14 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
+        """"""
         sucs = self.mdp.getTransitionStatesAndProbs(state, action)
         Qval = 0
-        """"hier moest geen haakjes (st, prob) wordt anders gezien als tuple en niet individuele dingen"""
         for st, prob in sucs:
-            Qval += prob * (self.mdp.getReward(state, action, st) + (self.values[st] * self.discount))
+          """gebruik hier Bellman equation om de Q-value uit te rekenen"""
+          reward = self.mdp.getReward(state, action, st)
+          discountedVal = self.values[st] * self.discount
+          Qval += prob * (reward + discountedVal)
         return Qval
 
 
@@ -98,13 +101,11 @@ class ValueIterationAgent(ValueEstimationAgent):
         """als er geen legal actions is (terminal state) return None (zie tekst boven)"""
         if self.mdp.isTerminal(state):
           return None
-
         """gebruik hier ook counter voor easyness om keys met values op te slaan (acties = key, value = qvalue)"""
         actFromVal = util.Counter()
         actions = self.mdp.getPossibleActions(state)
         for a in actions:
-            qVal = self.getQValue(state, a)
-            actFromVal[a] = qVal
+            actFromVal[a] = self.getValue(state, a)
         """return key (actie) met de hoogste value"""
         return actFromVal.argMax()
 
