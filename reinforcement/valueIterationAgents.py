@@ -105,7 +105,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         actFromVal = util.Counter()
         actions = self.mdp.getPossibleActions(state)
         for a in actions:
-            actFromVal[a] = self.getValue(state, a)
+          actFromVal[a] = self.getQValue(state, a)
         """return key (actie) met de hoogste value"""
         return actFromVal.argMax()
 
