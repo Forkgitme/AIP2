@@ -44,15 +44,24 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.values = util.Counter() # A Counter is a dict with default 0
 
         # Write value iteration code here
-        while self.iterations > 0:
-            for st in self.mdp.getStates():
-                v = self.values[st]
-                act = self.getAction(st)
-                if not act == None:
-                    self.values[st] = self.getQValue(st, act)
-            self.iterations -= 1
-        
+
         "*** YOUR CODE HERE ***"
+        """reken voor elke iteratie voor elke state de values uit"""
+        while self.iterations > 0:
+          """use util.Counter for easyness, om keys met values bij te houden (soort dictionary) zie util"""
+          v = util.Counter()
+          """als er geen legal actions zijn (terminal state) continue"""
+          for st in mdp.getStates():
+            if mdp.isTerminal(st):
+              continue
+            """hou een lijst bij met possible values van possible actions"""
+            possibleValues = []
+            for act in mdp.getPossibleActions(st):
+              possibleValues.append(self.getQValue(st, act))
+            """neem de value van de beste actie"""
+            v[st] = max(possibleValues)
+          self.iterations -= 1
+          self.values = v
 
 
     def getValue(self, state):
@@ -70,10 +79,11 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         sucs = self.mdp.getTransitionStatesAndProbs(state, action)
         Qval = 0
-        for (st, prob) in sucs:
+        """"hier moest geen haakjes (st, prob) wordt anders gezien als tuple en niet individuele dingen"""
+        for st, prob in sucs:
             Qval += prob * (self.mdp.getReward(state, action, st) + (self.values[st] * self.discount))
         return Qval
-            
+
 
     def computeActionFromValues(self, state):
         """
@@ -85,18 +95,19 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        an = None
-        val = -9999999
+        """als er geen legal actions is (terminal state) return None (zie tekst boven)"""
+        if self.mdp.isTerminal(state):
+          return None
+
+        """gebruik hier ook counter voor easyness om keys met values op te slaan (acties = key, value = qvalue)"""
+        actFromVal = util.Counter()
         actions = self.mdp.getPossibleActions(state)
         for a in actions:
             qVal = self.getQValue(state, a)
-            if qVal > val:
-                val = qVal
-                an = a
-        return an
-        
-            
-        
+            actFromVal[a] = qVal
+        """return key (actie) met de hoogste value"""
+        return actFromVal.argMax()
+
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
